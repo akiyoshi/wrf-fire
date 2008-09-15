@@ -41,14 +41,14 @@ do k=1,23
   tif(2,1)=2.000000
   tif(2,2)=2.000000
 
-  fuel_left_f=fuel_left_cell_1( &
+  fuel_left_f=fuel_left_cell_2( &
                  lff(1,1),lff(1,2),lff(2,1),lff(2,2),&
                  tif(1,1),tif(1,2),tif(2,1),tif(2,2),&
                  time_now, fuel_time(1,1)) 
                                               ! premultiply by weight
   fuel_left_f=1-fuel_left_f                                            
   print *,'fuel_left_f=',fuel_left_f 
-  write(iu,*) fuel_left_f 
+  write(iu,'(f12.8)') fuel_left_f 
 end do
 close(iu)   
 end program 

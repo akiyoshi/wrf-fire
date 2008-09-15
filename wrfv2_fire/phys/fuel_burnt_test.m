@@ -52,7 +52,8 @@ A= fscanf(fid,'%g');
 fclose(fid);
 err_mat_fortran=abs(A-tmp)
 save('err.mat','err_mat_fortran')
-disp(f_debug);
+f_debug
+err_mat_fortran
 end
 
 
