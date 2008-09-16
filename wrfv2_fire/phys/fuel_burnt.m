@@ -47,7 +47,6 @@ elseif all(lfn(:)<=0),
     fuel_fraction = 1 - exp(uu(3)) * intexp(uu(1)*fd(1)) * intexp(uu(2)*fd(2));
     if(fuel_fraction<0 | fuel_fraction>1),
         warning('fuel_fraction should be between 0 and 1')
-        stop
     end
 else
     % part of cell is burning - the interesting case
@@ -124,7 +123,6 @@ else
     errQ=ut(2)  % should be zero
     ae=-ut(1)/fuel_time;
     ce=-u(3)/fuel_time;     %  -T(xt,yt)/fuel_time=ae*xt+ce
-    cet=ce;  %keep ce for later
     xytlist=xylist*Q'; % rotate the points in the list
     xt=sort(xytlist(1:points,1)); % sort ascending in x
     fuel_fraction=0;
@@ -169,13 +167,6 @@ else
             if(lower~=1|upper~=1),
                 error('slice does not have one upper and one lower line')
             end
-            ce=cet;% use kept ce
-            % shift samll amounts to avoid negative fuel burnt
-            if ae*xt1+ce > 0;%disp('ae*xt1+ce');disp(ae*xt1+ce);pause;
-               ce=ce-(ae*xt1+ce);end;
-            if ae*xt2+ce > 0;%disp('ae*xt2+ce');disp(ae*xt2+ce);pause;
-               ce=ce-(ae*xt2+ce);end;
-            
             ah=aupp-alow;
             ch=cupp-clow;
             % debug only
@@ -206,7 +197,7 @@ else
             %     + 1/2*xt1^2-1/2*xt2^2
             %
             % coefficient at ae^2 in the expansion, after some algebra
-            a2=(xt1-xt2)*((1/4)*(xt1+xt2)*ceae^2+(1/3)*(xt1^2+xt1*xt2+xt2^2)*ceae+(1/8)*(xt1^3+xt1*xt2^2+xt1^2*xt2+xt2^3));
+            a2=(xt1-xt2)*(1/4*(xt1+xt2)*ceae^2+(1/3)*(xt1^2+xt1*xt2+xt2^2)*ceae+1/8*(xt1^3+xt1*xt2^2+xt1^2*xt2+xt2^3));
             d=ae^4*a2;
             if abs(d)>eps
                 % since ae*xt1+ce<=0 ae*xt2+ce<=0 all fine for large ae
@@ -220,17 +211,15 @@ else
                 a0=(1/2)*(xt1-xt2)*(xt1+xt2);
                 s3=a0+a1*ae+a2*ae^2; % approximate the integral
             end
-            s3=ah*s3;
+            s3=ah*s3
             fuel_fraction=fuel_fraction+s1+s2+s3;
             if(fuel_fraction<0 | fuel_fraction>(fd(1)*fd(2))),
                 fuel_fraction,(fd(1)*fd(2)),s1,s2,s3
                 warning('fuel_fraction should be between 0 and 1')
-                stop
             end
         end
     end
-    fuel_fraction=fuel_fraction/(fd(1)*fd(2))
-    %fuel_fraction=1-fuel_fraction;
+    fuel_fraction=fuel_fraction/(fd(1)*fd(2));
 end
 for i=figs,figure(i),hold off,end
 end % function
