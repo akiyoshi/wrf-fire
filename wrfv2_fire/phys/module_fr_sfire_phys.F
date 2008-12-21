@@ -196,8 +196,10 @@ do j=jfts,jfte
         ! fuel decreases as exp(-t/fuel_time) 
         ! exp(-600*0.85/1000) = approx 0.6 
 
-        ischap(i,j)=ichap(nfuel_cat(i,j))
-        fgip(i,j)=fgi(nfuel_cat(i,j))
+        k=nfuel_cat(i,j)
+
+        ischap(i,j)=ichap(k)
+        fgip(i,j)=fgi(k)
 
         ! end jm addition
 
@@ -208,41 +210,41 @@ do j=jfts,jfte
         !     ...Settings of fire spread parameters from Rothermel follows. These
         !        don't need to be recalculated later.
         
-        fuelloadm= (1.-bmst) * fgi(nfuel_cat(i,j))  !  fuelload without moisture
+        fuelloadm= (1.-bmst) * fgi(k)  !  fuelload without moisture
         fuelload = fuelloadm * (.3048)**2 * 2.205    ! to lb/ft^2
-        fueldepth = fueldepthm(nfuel_cat(i,j))/0.3048               ! to ft
-        betafl(i,j) = fuelload/(fueldepth * fueldens(nfuel_cat(i,j)))! packing ratio
-        betaop = 3.348 * savr(nfuel_cat(i,j))**(-0.8189)     ! optimum packing ratio
+        fueldepth = fueldepthm(k)/0.3048               ! to ft
+        betafl(i,j) = fuelload/(fueldepth * fueldens(k))! packing ratio
+        betaop = 3.348 * savr(k)**(-0.8189)     ! optimum packing ratio
         qig = 250. + 1116.*fuelmc_g            ! heat of preignition, btu/lb
-        epsilon = exp(-138./savr(nfuel_cat(i,j)) )    ! effective heating number
+        epsilon = exp(-138./savr(k) )    ! effective heating number
         rhob = fuelload/fueldepth    ! ovendry bulk density, lb/ft^3
 
-        c = 7.47 * exp( -0.133 * savr(nfuel_cat(i,j))**0.55)    ! const in wind coef
-        bbb(i,j) = 0.02526 * savr(nfuel_cat(i,j))**0.54                ! const in wind coef
-        e = 0.715 * exp( -3.59e-4 * savr(nfuel_cat(i,j)))       ! const in wind coef
+        c = 7.47 * exp( -0.133 * savr(k)**0.55)    ! const in wind coef
+        bbb(i,j) = 0.02526 * savr(k)**0.54                ! const in wind coef
+        e = 0.715 * exp( -3.59e-4 * savr(k))       ! const in wind coef
         phiwc(i,j) = c * (betafl(i,j)/betaop)**(-e)
 
-        rtemp2 = savr(nfuel_cat(i,j))**1.5
+        rtemp2 = savr(k)**1.5
         gammax = rtemp2/(495. + 0.0594*rtemp2)              ! maximum rxn vel, 1/min
-        a = 1./(4.774 * savr(nfuel_cat(i,j))**0.1 - 7.27)   ! coef for optimum rxn vel
+        a = 1./(4.774 * savr(k)**0.1 - 7.27)   ! coef for optimum rxn vel
         ratio = betafl(i,j)/betaop
         gamma = gammax *(ratio**a) *exp(a*(1.-ratio)) !optimum rxn vel, 1/min
 
-        wn = fuelload/(1 + st(nfuel_cat(i,j)))       ! net fuel loading, lb/ft^2
-        rtemp1 = fuelmc_g/fuelmce(nfuel_cat(i,j))
+        wn = fuelload/(1 + st(k))       ! net fuel loading, lb/ft^2
+        rtemp1 = fuelmc_g/fuelmce(k)
         etam = 1.-2.59*rtemp1 +5.11*rtemp1**2 -3.52*rtemp1**3  !moist damp coef
-        etas = 0.174* se(nfuel_cat(i,j))**(-0.19)                ! mineral damping coef
+        etas = 0.174* se(k)**(-0.19)                ! mineral damping coef
         ir = gamma * wn * fuelheat * etam * etas  !rxn intensity,btu/ft^2 min
         ! jm irm = ir * 1055./( 0.3048**2 * 60.) * 1.e-6     !for mw/m^2
         ! jm: irm set but never used??
 
-        xifr = exp( (0.792 + 0.681*savr(nfuel_cat(i,j))**0.5) &
-            * (betafl(i,j)+0.1)) /(192. + 0.2595*savr(nfuel_cat(i,j))) ! propagating flux ratio
+        xifr = exp( (0.792 + 0.681*savr(k)**0.5) &
+            * (betafl(i,j)+0.1)) /(192. + 0.2595*savr(k)) ! propagating flux ratio
 
 !        ... r_0 is the spread rate for a fire on flat ground with no wind.
 
         r_0(i,j) = ir*xifr/(rhob * epsilon *qig)    ! default spread rate in ft/min
-        if (nfuel_cat(i,j) .eq. 14) r_0(i,j)=0.     ! no fuel, no spread.
+        if (k .eq. 14) r_0(i,j)=0.     ! no fuel, no spread.
     enddo
 enddo
 
