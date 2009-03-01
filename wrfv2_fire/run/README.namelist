@@ -50,6 +50,7 @@ information on NMM specific settings (http://www.dtcenter.org/wrf-nmm/users)
  frames_per_outfile (max_dom)        = 1, 	; output times per history output file, used to split output files 
                                                   into smaller pieces
  restart                             = F,	; whether this run is a restart run
+ cycling                             = F,      ; whether this run is a cycling run (initialized with wrfout file)
  restart_interval		     = 1440,	; restart output file interval in minutes
  reset_simulation_start              = F,       ; whether to overwrite simulation_start_date with forecast start time
  io_form_history                     = 2,       ; 2 = netCDF 
@@ -142,7 +143,7 @@ Additional settings when running WRFVAR:
 
 Namelist variables specifically for the WPS input for real:
 
- num_soil_layers_in                  = 4        ; number of vertical soil levels or layers input
+ num_metgrid_soil_levels             = 4        ; number of vertical soil levels or layers input
                                                 ; from WPS metgrid program
  num_metgrid_levels                  = 27       ; number of vertical levels of 3d meteorological fields coming 
                                                 ; from WPS metgrid program
@@ -225,6 +226,7 @@ Namelist variables for controling the automatic moving nest:
  corral_dist(max_dom)                = 8        ; how many coarse grid cells the moving nest is allowed to get
                                                   near the mother domain boundary
  track_level                         = 50000    ; pressure value in Pa where the vortex is tracked
+ time_to_move(max_dom)               = 0.       ; time (in minutes) to start the moving nests     
 
  tile_sz_x                           = 0,       ; number of points in tile x direction
  tile_sz_y                           = 0,       ; number of points in tile y direction
@@ -426,6 +428,10 @@ Namelist variables for controlling the adaptive time step option:
 
  cudt                                = 0,       ; minutes between cumulus physics calls
 
+ cugd_avedx                          ; number of grid boxes over which subsidence is spread.
+                                     = 1, default, for large grid distances
+                                     = 3, for small grid distances (DX < 5 km)
+
  ncnvc (max_dom)                     = FOR NMM: number of fundamental timesteps between
                                                 calls to convection; the value is set in Registry.NMM
                                                 but is overridden by namelist value; cudt will be
@@ -496,7 +502,8 @@ Namelist variables for controlling the adaptive time step option:
  slope_rad                           = 0        ; slope effects for ra_sw_physics=1 (1=on, 0=off)
  topo_shading                        = 0        ; neighboring-point shadow effects for ra_sw_physics=1 (1=on, 0=off)
  shadlen                             = 25000.   ; max shadow length in meters for topo_shading=1
- omlcall                             = 0        ; activate simple ocean mixed layer model (0=no, 1=yes)
+ omlcall                             = 0        ; activate simple ocean mixed layer model (0=no, 1=yes); works with 
+                                                  sf_surface_physics = 1 only
  oml_hml0                            = 50       ; oml model can be initialized with a constant depth everywhere (m)
  oml_gamma                           = 0.14     ; oml deep water lapse rate (K m-1)
  isftcflx                            = 0        ; alternative Ck, Cd formulation for tropical storm application (0=default, 1=new)
@@ -578,7 +585,6 @@ The following are for observation nudging:
  num_force_layers                    = 8        ; number of SCM forcing layers
  scm_lu_index                        = 2        ; SCM landuse category (2 is dryland, cropland and pasture)
  scm_isltyp                          = 4        ; SCM soil category (4 is silt loam)
- scm_ivgtyp                          = 2        ; SCM landuse category
  scm_vegfra                          = 0.5      ; SCM vegetation fraction
  scm_canwat                          = 0.0      ; SCM canopy water
  scm_lat                             = 37.600   ; SCM latitude
@@ -615,7 +621,7 @@ The following are for observation nudging:
                                                   0 = without damping
                                                   1 = with diffusive damping, maybe used for real-data cases 
                                                       (dampcoef nondimensional ~0.01-0.1)
-                                                  2 = with Rayleigh  damping (dampcoef inverse time scale [1/s] e.g. .003; 
+                                                  2 = with Rayleigh  damping (dampcoef inverse time scale [1/s] e.g. .003; idealized case only
                                                       not for real-data cases)
                                                   3 = with w-Rayleigh damping (dampcoef inverse time scale [1/s] e.g. .05; 
                                                       for real-data cases)

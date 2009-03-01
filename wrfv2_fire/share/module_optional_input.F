@@ -205,10 +205,10 @@ CONTAINS
 #if (EM_CORE == 1)
       IF ( ( flag_soil_levels == 1 ) .OR. ( flag_soil_layers == 1 ) ) THEN
 
-         num_st_levels_input   = config_flags%num_soil_layers_in
-         num_sm_levels_input   = config_flags%num_soil_layers_in
-         num_sw_levels_input   = config_flags%num_soil_layers_in
-         num_soil_levels_input = config_flags%num_soil_layers_in
+         num_st_levels_input   = config_flags%num_metgrid_soil_levels
+         num_sm_levels_input   = config_flags%num_metgrid_soil_levels
+         num_sw_levels_input   = config_flags%num_metgrid_soil_levels
+         num_soil_levels_input = config_flags%num_metgrid_soil_levels
 
       END IF
 #endif
@@ -1157,16 +1157,16 @@ USE module_io_domain
       END IF
 
       write (message,'(A,I3)') 'flag_soil_layers at end of optional_lsm_levels is',flag_soil_layers
-      CALL wrf_debug(0,message)
+      CALL wrf_debug(1,message)
       write (message,'(A,I3)') 'flag_soil_levels at end of optional_lsm_levels is',flag_soil_levels
-      CALL wrf_debug(0,message)
+      CALL wrf_debug(1,message)
 
       write (message,'(A,10(i3,1x))') 'st_levels_input = ', (st_levels_input(k), k=1,num_st_levels_input)
-      CALL wrf_debug(0,message)
+      CALL wrf_debug(1,message)
       write (message,'(A,10(i3,1x))') 'sm_levels_input = ', (sm_levels_input(k), k=1,num_st_levels_input)
-      CALL wrf_debug(0,message)
+      CALL wrf_debug(1,message)
       write (message,'(A,10(i3,1x))') 'sw_levels_input = ', (sw_levels_input(k), k=1,num_st_levels_input)
-      CALL wrf_debug(0,message)
+      CALL wrf_debug(1,message)
 
       !  OK, let's do a quick sanity check.
  
