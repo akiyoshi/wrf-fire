@@ -1,3 +1,4 @@
+test edit
 This is the coupled WRF-Fire model, combining WRF and the SFIRE codes.
 
 For terms and conditions see the file license.txt
